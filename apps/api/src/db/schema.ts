@@ -7,7 +7,7 @@ export const products = sqliteTable("products", {
   name: text("name").notNull(),
   price: integer("price").notNull(), // dalam Rupiah, integer untuk hindari floating-point
   stock: integer("stock").notNull().default(0),
-  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  isActive: integer("is_active").notNull().default(1),
   createdAt: text("created_at")
     .notNull()
     .default(sql`(datetime('now'))`),
