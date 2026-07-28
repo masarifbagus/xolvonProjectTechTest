@@ -6,12 +6,8 @@
     "deploy": "wrangler deploy --minify",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "db:generate": "drizzle-kit generate",
-<<<<<<< HEAD
     "db:migrate": "wrangler d1 migrations apply mini-pos-db --local",
     "db:seed": "wrangler d1 execute mini-pos-db --local --file=src/db/seed.sql"
-=======
-    "db:migrate": "wrangler d1 migrations apply mini-pos-db --local"
->>>>>>> 3bbd456799f29bafd319c37953ee6f73cdc4cdcf
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

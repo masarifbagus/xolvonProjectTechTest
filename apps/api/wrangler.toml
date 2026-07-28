@@ -6,7 +6,4 @@ compatibility_date = "2026-07-28"
 binding = "DB"
 database_name = "mini-pos-db"
 database_id = "placeholder-will-be-replaced-after-creation"
-<<<<<<< HEAD
 migrations_dir = "drizzle"
-=======
->>>>>>> 3bbd456799f29bafd319c37953ee6f73cdc4cdcf

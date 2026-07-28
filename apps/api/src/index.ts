@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createDb } from "./db";
@@ -68,14 +67,3 @@ app.get("/health", async (c) => {
 app.route("/products", productsRoute);
 
 export default app;
-=======
-import { Hono } from 'hono'
-
-const app = new Hono()
-
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
-
-export default app
->>>>>>> 3bbd456799f29bafd319c37953ee6f73cdc4cdcf
