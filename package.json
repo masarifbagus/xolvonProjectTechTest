@@ -1,0 +1,11 @@
+{
+  "name": "mini-pos",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm -w apps/web run dev",
+    "dev:api": "npm -w apps/api run dev"
+  }
+}
