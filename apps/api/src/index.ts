@@ -1,13 +1,30 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { createDb } from "./db";
 import { products } from "./db/schema";
 import { count } from "drizzle-orm";
+import productsRoute from "./routes/products";
 
 type Bindings = {
   DB: D1Database;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
+
+// ─── CORS ────────────────────────────────────────────────────────────
+// Izinkan akses dari Next.js dev server & domain Cloudflare Pages
+app.use(
+  "/*",
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://*.pages.dev",
+    ],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    maxAge: 86400,
+  })
+);
 
 app.get("/", (c) => {
   return c.text("Mini POS API");
@@ -45,5 +62,8 @@ app.get("/health", async (c) => {
     );
   }
 });
+
+// ─── Routes ──────────────────────────────────────────────────────────
+app.route("/products", productsRoute);
 
 export default app;
