@@ -2,7 +2,9 @@ import type { Product, ProductFormData } from "@/types/product";
 import type { CheckoutResponse } from "@/types/cart";
 import type { TransactionSummary, TransactionDetail } from "@/types/transaction";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://mini-pos-api.mas-arifbagus2407.workers.dev";
 
 // ─── Error helper ─────────────────────────────────────────────
 
