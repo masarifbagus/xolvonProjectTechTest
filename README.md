@@ -14,6 +14,7 @@ Aplikasi Point of Sale (POS) modern, cepat, dan ringan berbasis TypeScript monor
 > [!NOTE]
 > Seluruh infrastruktur dideploy di atas **Cloudflare Free Tier** (Workers, D1, dan Pages) tanpa memerlukan kartu kredit.
 
+
 ---
 
 ## 🚀 Fitur Utama
