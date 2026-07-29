@@ -5,5 +5,5 @@ compatibility_date = "2026-07-28"
 [[d1_databases]]
 binding = "DB"
 database_name = "mini-pos-db"
-database_id = "placeholder-will-be-replaced-after-creation"
+database_id = "9ea6aea8-cd23-48d2-9c00-4b5ee71e5322"
 migrations_dir = "drizzle"

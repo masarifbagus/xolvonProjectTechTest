@@ -18,10 +18,16 @@ const app = new Hono<{ Bindings: Bindings }>();
 app.use(
   "/*",
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://*.pages.dev",
-    ],
+    origin: (origin) => {
+      if (!origin) return "*";
+      if (
+        origin === "http://localhost:3000" ||
+        origin.endsWith(".pages.dev")
+      ) {
+        return origin;
+      }
+      return "*";
+    },
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     maxAge: 86400,
