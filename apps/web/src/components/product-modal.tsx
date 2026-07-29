@@ -139,7 +139,7 @@ export default function ProductModal({
       onClick={handleBackdropClick}
       className={`
         fixed inset-0 z-50 flex items-center justify-center p-4
-        bg-black/60 backdrop-blur-sm
+        bg-slate-900/40
         ${closing ? "animate-fade-out" : "animate-fade-in"}
       `}
       role="dialog"
@@ -148,28 +148,27 @@ export default function ProductModal({
     >
       <div
         className={`
-          w-full max-w-md rounded-2xl
-          bg-surface border border-glass-border
-          shadow-2xl shadow-black/40
-          ${closing ? "animate-slide-down" : "animate-slide-up"}
+          w-full max-w-md rounded-lg bg-white border border-border
+          shadow-xl overflow-hidden
+          ${closing ? "animate-fade-out" : "animate-slide-up"}
         `}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-2">
-          <h2 className="text-lg font-semibold text-foreground">
-            {isEdit ? "Edit Produk" : "Tambah Produk Baru"}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-white">
+          <h2 className="text-sm font-bold text-text-primary">
+            {isEdit ? "Edit Detail Produk" : "Tambah Produk Baru"}
           </h2>
           <button
             onClick={handleClose}
             disabled={submitting}
-            className="p-2 -mr-2 rounded-xl text-muted hover:text-foreground hover:bg-white/5 transition-colors"
+            className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface transition-colors"
             aria-label="Tutup modal"
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path
-                d="M14 6L6 14M6 6L14 14"
+                d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5"
                 stroke="currentColor"
-                strokeWidth="1.5"
+                strokeWidth="1.6"
                 strokeLinecap="round"
               />
             </svg>
@@ -177,25 +176,29 @@ export default function ProductModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 pb-6 pt-2">
-          {/* Error */}
+        <form onSubmit={handleSubmit} className="p-6">
+          {/* Error Banner */}
           {error && (
             <div
-              className="mb-4 px-4 py-3 rounded-xl text-sm text-red-400 bg-red-500/10 border border-red-500/20"
+              className="mb-4 px-3.5 py-2.5 rounded-md text-xs font-semibold text-danger bg-red-50 border border-red-200 flex items-center gap-2"
               role="alert"
             >
-              {error}
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0">
+                <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M8 5V8.5M8 11H8.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+              <span>{error}</span>
             </div>
           )}
 
           <div className="space-y-4">
-            {/* Nama */}
+            {/* Nama Input */}
             <div>
               <label
                 htmlFor="product-name"
-                className="block text-sm font-medium text-foreground/70 mb-1.5"
+                className="block text-xs font-semibold text-text-primary mb-1.5"
               >
-                Nama Produk
+                Nama Produk <span className="text-danger">*</span>
               </label>
               <input
                 ref={nameRef}
@@ -203,26 +206,25 @@ export default function ProductModal({
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Contoh: Kopi Susu"
+                placeholder="Masukkan nama produk"
                 disabled={submitting}
                 className="
-                  w-full px-4 py-2.5 rounded-xl text-sm
-                  bg-background border border-glass-border
-                  text-foreground placeholder:text-muted/50
-                  focus:border-accent focus:ring-1 focus:ring-accent/30
-                  disabled:opacity-50
-                  transition-all
+                  w-full px-3.5 py-2 rounded-md text-xs
+                  bg-white border border-border
+                  text-text-primary placeholder:text-text-secondary/50
+                  focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none
+                  disabled:opacity-50 transition-all shadow-xs
                 "
               />
             </div>
 
-            {/* Harga */}
+            {/* Harga Input */}
             <div>
               <label
                 htmlFor="product-price"
-                className="block text-sm font-medium text-foreground/70 mb-1.5"
+                className="block text-xs font-semibold text-text-primary mb-1.5"
               >
-                Harga (Rp)
+                Harga Satuan (Rp) <span className="text-danger">*</span>
               </label>
               <input
                 id="product-price"
@@ -231,26 +233,25 @@ export default function ProductModal({
                 step="1"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder="Contoh: 25000"
+                placeholder="Contoh: 18000"
                 disabled={submitting}
                 className="
-                  w-full px-4 py-2.5 rounded-xl text-sm
-                  bg-background border border-glass-border
-                  text-foreground placeholder:text-muted/50
-                  focus:border-accent focus:ring-1 focus:ring-accent/30
-                  disabled:opacity-50
-                  transition-all
+                  w-full px-3.5 py-2 rounded-md text-xs tabular-nums
+                  bg-white border border-border
+                  text-text-primary placeholder:text-text-secondary/50
+                  focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none
+                  disabled:opacity-50 transition-all shadow-xs
                 "
               />
             </div>
 
-            {/* Stok */}
+            {/* Stok Input */}
             <div>
               <label
                 htmlFor="product-stock"
-                className="block text-sm font-medium text-foreground/70 mb-1.5"
+                className="block text-xs font-semibold text-text-primary mb-1.5"
               >
-                Stok
+                Jumlah Stok <span className="text-danger">*</span>
               </label>
               <input
                 id="product-stock"
@@ -259,33 +260,29 @@ export default function ProductModal({
                 step="1"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
-                placeholder="Contoh: 100"
+                placeholder="Contoh: 50"
                 disabled={submitting}
                 className="
-                  w-full px-4 py-2.5 rounded-xl text-sm
-                  bg-background border border-glass-border
-                  text-foreground placeholder:text-muted/50
-                  focus:border-accent focus:ring-1 focus:ring-accent/30
-                  disabled:opacity-50
-                  transition-all
+                  w-full px-3.5 py-2 rounded-md text-xs tabular-nums
+                  bg-white border border-border
+                  text-text-primary placeholder:text-text-secondary/50
+                  focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none
+                  disabled:opacity-50 transition-all shadow-xs
                 "
               />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 mt-6">
+          <div className="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-border">
             <button
               type="button"
               onClick={handleClose}
               disabled={submitting}
               className="
-                flex-1 px-4 py-2.5 rounded-xl text-sm font-medium
-                bg-white/5 text-foreground/70
-                hover:bg-white/10 hover:text-foreground
-                border border-glass-border
-                disabled:opacity-50
-                transition-all
+                px-4 py-2 rounded-md text-xs font-semibold
+                border border-border bg-white text-text-primary
+                hover:bg-surface disabled:opacity-50 transition-all shadow-xs
               "
             >
               Batal
@@ -294,39 +291,16 @@ export default function ProductModal({
               type="submit"
               disabled={submitting}
               className="
-                flex-1 px-4 py-2.5 rounded-xl text-sm font-medium
-                bg-accent text-white
-                hover:bg-accent-hover
-                disabled:opacity-50
-                shadow-lg shadow-accent/20
-                transition-all
+                px-4 py-2 rounded-md text-xs font-semibold
+                bg-primary text-white hover:bg-primary-hover
+                disabled:opacity-50 transition-all shadow-xs
                 flex items-center justify-center gap-2
               "
             >
               {submitting ? (
                 <>
-                  <svg
-                    className="animate-spin h-4 w-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      className="opacity-25"
-                    />
-                    <path
-                      d="M4 12a8 8 0 018-8"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      className="opacity-75"
-                    />
-                  </svg>
-                  <span>Menyimpan…</span>
+                  <span className="checkout-spinner" aria-hidden="true" />
+                  <span>Menyimpan...</span>
                 </>
               ) : isEdit ? (
                 "Simpan Perubahan"

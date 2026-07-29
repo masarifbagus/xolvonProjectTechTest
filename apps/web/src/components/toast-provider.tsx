@@ -103,9 +103,9 @@ const iconMap: Record<ToastType, () => ReactNode> = {
 };
 
 const colorMap: Record<ToastType, string> = {
-  success: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-  error: "text-red-400 bg-red-500/10 border-red-500/20",
-  info: "text-violet-400 bg-violet-500/10 border-violet-500/20",
+  success: "text-emerald-900 bg-emerald-50 border-emerald-200",
+  error: "text-red-900 bg-red-50 border-red-200",
+  info: "text-blue-900 bg-blue-50 border-blue-200",
 };
 
 // ─── Provider ─────────────────────────────────────────────────
@@ -148,8 +148,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={t.id}
               role="alert"
               className={`
-                pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl
-                border backdrop-blur-xl shadow-2xl max-w-sm
+                pointer-events-auto flex items-center gap-3 px-3.5 py-2.5 rounded-lg
+                border shadow-md max-w-sm text-xs font-semibold
                 ${colorMap[t.type]}
                 ${t.exiting ? "animate-toast-exit" : "animate-toast-enter"}
               `}
@@ -157,15 +157,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <span className="shrink-0">
                 <Icon />
               </span>
-              <p className="text-sm font-medium text-foreground/90">
+              <p className="flex-1 text-xs font-medium">
                 {t.message}
               </p>
               <button
                 onClick={() => removeToast(t.id)}
-                className="ml-auto shrink-0 p-1 rounded-lg text-foreground/40 hover:text-foreground/70 transition-colors"
+                className="ml-auto shrink-0 p-1 rounded hover:bg-black/5 transition-colors"
                 aria-label="Tutup notifikasi"
               >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
                   <path
                     d="M10.5 3.5L3.5 10.5M3.5 3.5L10.5 10.5"
                     stroke="currentColor"

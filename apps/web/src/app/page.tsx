@@ -20,8 +20,6 @@ import ErrorState from "@/components/error-state";
 import CartSidebar from "@/components/cart-sidebar";
 import CheckoutSuccessModal from "@/components/checkout-success-modal";
 
-// ─── Page Component ───────────────────────────────────────────
-
 export default function ProductsPage() {
   const { toast } = useToast();
   const { addToCart, totalItems, refreshStock } = useCart();
@@ -151,15 +149,15 @@ export default function ProductsPage() {
   // ─── Render ───────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col flex-1 min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-glass-border bg-background/80 backdrop-blur-xl">
+    <div className="flex flex-col flex-1 min-h-screen bg-background text-text-primary">
+      {/* Header / Navbar */}
+      <header className="sticky top-0 z-30 border-b border-border bg-white shadow-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo & Navigation */}
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shadow-lg shadow-accent/20">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-xs">
                   <svg
                     width="18"
                     height="18"
@@ -174,7 +172,6 @@ export default function ProductsPage() {
                       height="6"
                       rx="1.5"
                       fill="currentColor"
-                      opacity="0.9"
                     />
                     <rect
                       x="10"
@@ -183,7 +180,7 @@ export default function ProductsPage() {
                       height="6"
                       rx="1.5"
                       fill="currentColor"
-                      opacity="0.6"
+                      opacity="0.75"
                     />
                     <rect
                       x="2"
@@ -192,7 +189,7 @@ export default function ProductsPage() {
                       height="6"
                       rx="1.5"
                       fill="currentColor"
-                      opacity="0.6"
+                      opacity="0.75"
                     />
                     <rect
                       x="10"
@@ -201,80 +198,75 @@ export default function ProductsPage() {
                       height="6"
                       rx="1.5"
                       fill="currentColor"
-                      opacity="0.3"
+                      opacity="0.4"
                     />
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-sm font-semibold text-foreground">
+                  <h1 className="text-sm font-bold text-text-primary tracking-tight">
                     Mini POS
                   </h1>
-                  <p className="text-[11px] text-muted -mt-0.5">
+                  <p className="text-[11px] text-text-secondary -mt-0.5">
                     Manajemen Produk
                   </p>
                 </div>
               </div>
 
               {/* Navigation Links */}
-              <nav className="hidden sm:flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-glass-border">
+              <nav className="hidden sm:flex items-center gap-1 bg-surface p-1 rounded-lg border border-border">
                 <Link
                   href="/"
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-accent text-white shadow-sm transition-all"
+                  className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white text-primary shadow-xs border border-border/50 transition-all"
                 >
                   Produk
                 </Link>
                 <Link
                   href="/transactions"
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-white/5 transition-all"
+                  className="px-3 py-1.5 rounded-md text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-white/60 transition-all"
                 >
                   Riwayat Transaksi
                 </Link>
               </nav>
             </div>
 
-
             {/* Header Actions */}
             {!loading && !error && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 {/* Mobile Transactions Link */}
                 <Link
                   href="/transactions"
-                  className="sm:hidden px-3 py-1.5 rounded-xl text-xs font-medium bg-white/5 border border-glass-border text-foreground hover:bg-white/10 transition-all"
+                  className="sm:hidden px-3 py-1.5 rounded-lg text-xs font-medium bg-surface border border-border text-text-primary hover:bg-slate-100 transition-all"
                 >
                   Riwayat
                 </Link>
 
                 {/* Cart Button */}
-
                 <button
                   onClick={() => setCartOpen(true)}
                   className="
-                    relative inline-flex items-center justify-center
-                    w-10 h-10 rounded-xl
-                    text-foreground/60 hover:text-foreground
-                    hover:bg-white/5
-                    transition-all active:scale-95
+                    relative inline-flex items-center justify-center gap-2
+                    px-3 py-2 rounded-lg border border-border
+                    bg-white hover:bg-surface text-text-primary
+                    transition-all active:scale-95 shadow-xs
                   "
                   aria-label={`Keranjang (${totalItems} item)`}
                 >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                     <path
                       d="M2 2H4L4.8 5M4.8 5H18L15 12H6.5L4.8 5ZM7 17C7 17.5523 6.55228 18 6 18C5.44772 18 5 17.5523 5 17C5 16.4477 5.44772 16 6 16C6.55228 16 7 16.4477 7 17ZM16 17C16 17.5523 15.5523 18 15 18C14.4477 18 14 17.5523 14 17C14 16.4477 14.4477 16 15 16C15.5523 16 16 16.4477 16 17Z"
                       stroke="currentColor"
-                      strokeWidth="1.5"
+                      strokeWidth="1.6"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
                   </svg>
+                  <span className="hidden sm:inline text-xs font-semibold">Keranjang</span>
                   {totalItems > 0 && (
                     <span className="
-                      absolute -top-0.5 -right-0.5
-                      min-w-[18px] h-[18px] px-1
+                      min-w-[20px] h-[20px] px-1.5
                       flex items-center justify-center
-                      rounded-full text-[10px] font-bold
-                      bg-accent text-white
-                      shadow-lg shadow-accent/30
-                      animate-cart-badge
+                      rounded-full text-[11px] font-bold tabular-nums
+                      bg-primary text-white shadow-xs
                     ">
                       {totalItems > 99 ? "99+" : totalItems}
                     </span>
@@ -285,14 +277,13 @@ export default function ProductsPage() {
                 <button
                   onClick={handleOpenCreate}
                   className="
-                    inline-flex items-center gap-2 px-4 py-2 rounded-xl
-                    text-sm font-medium bg-accent text-white
-                    hover:bg-accent-hover
-                    shadow-lg shadow-accent/20
+                    inline-flex items-center gap-2 px-3.5 py-2 rounded-lg
+                    text-xs font-semibold bg-primary text-white
+                    hover:bg-primary-hover shadow-xs
                     transition-all active:scale-95
                   "
                 >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                     <path
                       d="M8 3V13M3 8H13"
                       stroke="currentColor"
@@ -300,8 +291,7 @@ export default function ProductsPage() {
                       strokeLinecap="round"
                     />
                   </svg>
-                  <span className="hidden sm:inline">Tambah Produk</span>
-                  <span className="sm:hidden">Tambah</span>
+                  <span>Tambah Produk</span>
                 </button>
               </div>
             )}
@@ -310,57 +300,19 @@ export default function ProductsPage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
-        {/* Stats Cards — hanya tampil saat ada data */}
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Stats Cards */}
         {!loading && !error && products.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <StatCard
               label="Total Produk"
               value={products.length}
               icon={
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="text-violet-400"
-                >
-                  <rect
-                    x="2"
-                    y="2"
-                    width="5"
-                    height="5"
-                    rx="1"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                  />
-                  <rect
-                    x="9"
-                    y="2"
-                    width="5"
-                    height="5"
-                    rx="1"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                  />
-                  <rect
-                    x="2"
-                    y="9"
-                    width="5"
-                    height="5"
-                    rx="1"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                  />
-                  <rect
-                    x="9"
-                    y="9"
-                    width="5"
-                    height="5"
-                    rx="1"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                  />
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
+                  <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                  <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                  <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                  <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
               }
             />
@@ -368,20 +320,8 @@ export default function ProductsPage() {
               label="Aktif"
               value={activeCount}
               icon={
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="text-emerald-400"
-                >
-                  <path
-                    d="M13.5 4.5L6.5 11.5L2.5 7.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-success">
+                  <path d="M13.5 4.5L6.5 11.5L2.5 7.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               }
             />
@@ -389,24 +329,9 @@ export default function ProductsPage() {
               label="Total Stok"
               value={totalStock}
               icon={
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="text-blue-400"
-                >
-                  <path
-                    d="M3 6L8 3L13 6V10L8 13L3 10V6Z"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M8 8V13M3 6L8 8M8 8L13 6"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                  />
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-secondary">
+                  <path d="M3 6L8 3L13 6V10L8 13L3 10V6Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                  <path d="M8 8V13M3 6L8 8M8 8L13 6" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
               }
             />
@@ -414,25 +339,9 @@ export default function ProductsPage() {
               label="Stok Rendah"
               value={lowStockCount}
               icon={
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="text-amber-400"
-                >
-                  <path
-                    d="M8 3L14 13H2L8 3Z"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M8 7V9.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-warning">
+                  <path d="M8 3L14 13H2L8 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                  <path d="M8 7V9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   <circle cx="8" cy="11" r="0.75" fill="currentColor" />
                 </svg>
               }
@@ -460,8 +369,8 @@ export default function ProductsPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-glass-border py-4">
-        <p className="text-center text-xs text-muted">
+      <footer className="border-t border-border bg-white py-4 mt-auto">
+        <p className="text-center text-xs text-text-secondary">
           Mini POS &copy; {new Date().getFullYear()} — Xolvon Tech Test
         </p>
       </footer>
@@ -509,15 +418,15 @@ function StatCard({
   return (
     <div
       className={`
-        rounded-xl border p-4
-        ${warning ? "border-amber-500/20 bg-amber-500/5" : "border-glass-border bg-surface"}
+        rounded-lg border p-4 bg-white shadow-xs
+        ${warning ? "border-amber-200 bg-amber-50/50" : "border-border"}
       `}
     >
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs font-medium text-text-secondary">{label}</span>
         {icon}
-        <span className="text-xs text-muted">{label}</span>
       </div>
-      <p className="text-xl font-semibold text-foreground tabular-nums">
+      <p className="text-2xl font-bold text-text-primary tabular-nums">
         {value.toLocaleString("id-ID")}
       </p>
     </div>
