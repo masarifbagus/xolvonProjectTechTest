@@ -1,4 +1,5 @@
 import type { Product, ProductFormData } from "@/types/product";
+import type { CheckoutResponse } from "@/types/cart";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
 
@@ -72,4 +73,18 @@ export async function toggleProductStatus(
     body: JSON.stringify({ isActive }),
   });
   return handleResponse<Product>(res);
+}
+
+// ─── Checkout API ─────────────────────────────────────────────
+
+/** Proses checkout — kirim hanya productId & qty, BUKAN harga */
+export async function checkout(
+  items: { productId: number; qty: number }[]
+): Promise<CheckoutResponse> {
+  const res = await fetch(`${API_URL}/checkout`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items }),
+  });
+  return handleResponse<CheckoutResponse>(res);
 }

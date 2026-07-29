@@ -10,6 +10,7 @@ interface ProductTableProps {
   togglingIds: Set<number>;
   onEdit: (product: Product) => void;
   onToggleStatus: (product: Product) => void;
+  onAddToCart: (product: Product) => void;
 }
 
 // ─── Component ────────────────────────────────────────────────
@@ -19,6 +20,7 @@ export default function ProductTable({
   togglingIds,
   onEdit,
   onToggleStatus,
+  onAddToCart,
 }: ProductTableProps) {
   return (
     <div className="rounded-2xl border border-glass-border bg-surface overflow-hidden">
@@ -110,34 +112,59 @@ export default function ProductTable({
                     </div>
                   </td>
 
-                  {/* Edit */}
+                  {/* Actions */}
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => onEdit(product)}
-                      className="
-                        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                        text-xs font-medium text-foreground/50
-                        hover:text-foreground hover:bg-white/5
-                        transition-all
-                      "
-                      aria-label={`Edit ${product.name}`}
-                    >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 14 14"
-                        fill="none"
+                    <div className="flex items-center justify-end gap-2">
+                      {isActive && product.stock > 0 && (
+                        <button
+                          onClick={() => onAddToCart(product)}
+                          className="
+                            inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                            text-xs font-medium text-accent
+                            hover:bg-accent/10
+                            transition-all active:scale-95
+                          "
+                          aria-label={`Tambah ${product.name} ke keranjang`}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path
+                              d="M1.5 1.5H3L3.6 3.5M3.6 3.5H12.5L10.5 8.5H4.5L3.6 3.5ZM5 12C5 12.5523 4.55228 13 4 13C3.44772 13 3 12.5523 3 12C3 11.4477 3.44772 11 4 11C4.55228 11 5 11.4477 5 12ZM11 12C11 12.5523 10.5523 13 10 13C9.44772 13 9 12.5523 9 12C9 11.4477 9.44772 11 10 11C10.5523 11 11 11.4477 11 12Z"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          Keranjang
+                        </button>
+                      )}
+                      <button
+                        onClick={() => onEdit(product)}
+                        className="
+                          inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                          text-xs font-medium text-foreground/50
+                          hover:text-foreground hover:bg-white/5
+                          transition-all
+                        "
+                        aria-label={`Edit ${product.name}`}
                       >
-                        <path
-                          d="M9.5 2.5L11.5 4.5M1.5 12.5L2 10L10 2L12 4L4 12L1.5 12.5Z"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      Edit
-                    </button>
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 14 14"
+                          fill="none"
+                        >
+                          <path
+                            d="M9.5 2.5L11.5 4.5M1.5 12.5L2 10L10 2L12 4L4 12L1.5 12.5Z"
+                            stroke="currentColor"
+                            strokeWidth="1.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        Edit
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
@@ -207,32 +234,57 @@ export default function ProductTable({
                   </span>
                 </div>
 
-                <button
-                  onClick={() => onEdit(product)}
-                  className="
-                    inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                    text-xs font-medium text-foreground/50
-                    hover:text-foreground hover:bg-white/5
-                    transition-all
-                  "
-                  aria-label={`Edit ${product.name}`}
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
+                <div className="flex items-center gap-2">
+                  {isActive && product.stock > 0 && (
+                    <button
+                      onClick={() => onAddToCart(product)}
+                      className="
+                        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                        text-xs font-medium text-accent
+                        hover:bg-accent/10
+                        transition-all active:scale-95
+                      "
+                      aria-label={`Tambah ${product.name} ke keranjang`}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path
+                          d="M1.5 1.5H3L3.6 3.5M3.6 3.5H12.5L10.5 8.5H4.5L3.6 3.5ZM5 12C5 12.5523 4.55228 13 4 13C3.44772 13 3 12.5523 3 12C3 11.4477 3.44772 11 4 11C4.55228 11 5 11.4477 5 12ZM11 12C11 12.5523 10.5523 13 10 13C9.44772 13 9 12.5523 9 12C9 11.4477 9.44772 11 10 11C10.5523 11 11 11.4477 11 12Z"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      +Keranjang
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onEdit(product)}
+                    className="
+                      inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                      text-xs font-medium text-foreground/50
+                      hover:text-foreground hover:bg-white/5
+                      transition-all
+                    "
+                    aria-label={`Edit ${product.name}`}
                   >
-                    <path
-                      d="M9.5 2.5L11.5 4.5M1.5 12.5L2 10L10 2L12 4L4 12L1.5 12.5Z"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  Edit
-                </button>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                    >
+                      <path
+                        d="M9.5 2.5L11.5 4.5M1.5 12.5L2 10L10 2L12 4L4 12L1.5 12.5Z"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Edit
+                  </button>
+                </div>
               </div>
             </div>
           );

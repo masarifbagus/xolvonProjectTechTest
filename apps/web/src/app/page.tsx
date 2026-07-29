@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Product, ProductFormData } from "@/types/product";
+import type { CheckoutResponse } from "@/types/cart";
 import {
   fetchProducts,
   createProduct,
@@ -9,16 +10,20 @@ import {
   toggleProductStatus,
 } from "@/lib/api";
 import { useToast } from "@/components/toast-provider";
+import { useCart } from "@/components/cart-context";
 import ProductTable from "@/components/product-table";
 import ProductModal from "@/components/product-modal";
 import ProductSkeleton from "@/components/product-skeleton";
 import EmptyState from "@/components/empty-state";
 import ErrorState from "@/components/error-state";
+import CartSidebar from "@/components/cart-sidebar";
+import CheckoutSuccessModal from "@/components/checkout-success-modal";
 
 // ─── Page Component ───────────────────────────────────────────
 
 export default function ProductsPage() {
   const { toast } = useToast();
+  const { addToCart, totalItems, refreshStock } = useCart();
 
   // Data state
   const [products, setProducts] = useState<Product[]>([]);
@@ -32,6 +37,10 @@ export default function ProductsPage() {
   // Per-product toggling state
   const [togglingIds, setTogglingIds] = useState<Set<number>>(new Set());
 
+  // Cart state
+  const [cartOpen, setCartOpen] = useState(false);
+  const [checkoutResult, setCheckoutResult] = useState<CheckoutResponse | null>(null);
+
   // ─── Fetch Products ───────────────────────────────────────
 
   const loadProducts = useCallback(async () => {
@@ -40,6 +49,7 @@ export default function ProductsPage() {
     try {
       const data = await fetchProducts();
       setProducts(data);
+      refreshStock(data);
     } catch (err) {
       const message =
         err instanceof Error
@@ -49,7 +59,7 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [refreshStock]);
 
   useEffect(() => {
     loadProducts();
@@ -115,6 +125,18 @@ export default function ProductsPage() {
         return next;
       });
     }
+  };
+
+  // ─── Cart Handlers ────────────────────────────────────────
+
+  const handleAddToCart = (product: Product) => {
+    addToCart(product);
+    toast(`${product.name} ditambahkan ke keranjang`, "success");
+  };
+
+  const handleCheckoutSuccess = (result: CheckoutResponse) => {
+    setCheckoutResult(result);
+    loadProducts(); // refresh stok terbaru
   };
 
   // ─── Stats ────────────────────────────────────────────────
@@ -191,29 +213,68 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* Add Button */}
+            {/* Header Actions */}
             {!loading && !error && (
-              <button
-                onClick={handleOpenCreate}
-                className="
-                  inline-flex items-center gap-2 px-4 py-2 rounded-xl
-                  text-sm font-medium bg-accent text-white
-                  hover:bg-accent-hover
-                  shadow-lg shadow-accent/20
-                  transition-all active:scale-95
-                "
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M8 3V13M3 8H13"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <span className="hidden sm:inline">Tambah Produk</span>
-                <span className="sm:hidden">Tambah</span>
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Cart Button */}
+                <button
+                  onClick={() => setCartOpen(true)}
+                  className="
+                    relative inline-flex items-center justify-center
+                    w-10 h-10 rounded-xl
+                    text-foreground/60 hover:text-foreground
+                    hover:bg-white/5
+                    transition-all active:scale-95
+                  "
+                  aria-label={`Keranjang (${totalItems} item)`}
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path
+                      d="M2 2H4L4.8 5M4.8 5H18L15 12H6.5L4.8 5ZM7 17C7 17.5523 6.55228 18 6 18C5.44772 18 5 17.5523 5 17C5 16.4477 5.44772 16 6 16C6.55228 16 7 16.4477 7 17ZM16 17C16 17.5523 15.5523 18 15 18C14.4477 18 14 17.5523 14 17C14 16.4477 14.4477 16 15 16C15.5523 16 16 16.4477 16 17Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  {totalItems > 0 && (
+                    <span className="
+                      absolute -top-0.5 -right-0.5
+                      min-w-[18px] h-[18px] px-1
+                      flex items-center justify-center
+                      rounded-full text-[10px] font-bold
+                      bg-accent text-white
+                      shadow-lg shadow-accent/30
+                      animate-cart-badge
+                    ">
+                      {totalItems > 99 ? "99+" : totalItems}
+                    </span>
+                  )}
+                </button>
+
+                {/* Add Product Button */}
+                <button
+                  onClick={handleOpenCreate}
+                  className="
+                    inline-flex items-center gap-2 px-4 py-2 rounded-xl
+                    text-sm font-medium bg-accent text-white
+                    hover:bg-accent-hover
+                    shadow-lg shadow-accent/20
+                    transition-all active:scale-95
+                  "
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M8 3V13M3 8H13"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Tambah Produk</span>
+                  <span className="sm:hidden">Tambah</span>
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -364,6 +425,7 @@ export default function ProductsPage() {
             togglingIds={togglingIds}
             onEdit={handleOpenEdit}
             onToggleStatus={handleToggleStatus}
+            onAddToCart={handleAddToCart}
           />
         )}
       </main>
@@ -375,13 +437,29 @@ export default function ProductsPage() {
         </p>
       </footer>
 
-      {/* Modal */}
+      {/* Product Modal */}
       <ProductModal
         open={modalOpen}
         product={editingProduct}
         onClose={handleCloseModal}
         onSubmit={handleSubmit}
       />
+
+      {/* Cart Sidebar */}
+      <CartSidebar
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        onCheckoutSuccess={handleCheckoutSuccess}
+        onRefreshProducts={loadProducts}
+      />
+
+      {/* Checkout Success Modal */}
+      {checkoutResult && (
+        <CheckoutSuccessModal
+          result={checkoutResult}
+          onClose={() => setCheckoutResult(null)}
+        />
+      )}
     </div>
   );
 }
