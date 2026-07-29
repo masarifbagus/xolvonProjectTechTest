@@ -7,15 +7,18 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply mini-pos-db --local",
-    "db:seed": "wrangler d1 execute mini-pos-db --local --file=src/db/seed.sql"
+    "db:seed": "wrangler d1 execute mini-pos-db --local --file=src/db/seed.sql",
+    "test": "vitest run"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.32"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.19.0",
     "@cloudflare/workers-types": "^5.20260729.1",
     "drizzle-kit": "^0.31.10",
+    "vitest": "^4.1.10",
     "wrangler": "^4.110.0"
   }
 }
