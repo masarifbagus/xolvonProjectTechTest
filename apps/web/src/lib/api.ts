@@ -1,11 +1,12 @@
 import type { Product, ProductFormData } from "@/types/product";
 import type { CheckoutResponse } from "@/types/cart";
+import type { TransactionSummary, TransactionDetail } from "@/types/transaction";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
 
 // ─── Error helper ─────────────────────────────────────────────
 
-class ApiError extends Error {
+export class ApiError extends Error {
   status: number;
 
   constructor(message: string, status: number) {
@@ -88,3 +89,24 @@ export async function checkout(
   });
   return handleResponse<CheckoutResponse>(res);
 }
+
+// ─── Transaction API ──────────────────────────────────────────
+
+/** Fetch list semua transaksi */
+export async function fetchTransactions(): Promise<TransactionSummary[]> {
+  const res = await fetch(`${API_URL}/transactions`, {
+    cache: "no-store",
+  });
+  return handleResponse<TransactionSummary[]>(res);
+}
+
+/** Fetch detail satu transaksi */
+export async function fetchTransactionDetail(
+  id: number
+): Promise<TransactionDetail> {
+  const res = await fetch(`${API_URL}/transactions/${id}`, {
+    cache: "no-store",
+  });
+  return handleResponse<TransactionDetail>(res);
+}
+

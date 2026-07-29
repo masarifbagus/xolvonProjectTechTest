@@ -161,7 +161,7 @@ checkoutRoute.post("/", async (c) => {
   //    jika ada race condition. Jika update menghasilkan 0 rows affected,
   //    artinya stok sudah berubah sejak validasi di atas.
   try {
-    const batchOps: Parameters<typeof db.batch>[0] = [];
+    const batchOps: any[] = [];
 
     for (const item of lineItems) {
       // Insert transaction item dengan snapshot data

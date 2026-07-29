@@ -5,6 +5,7 @@ import { products } from "./db/schema";
 import { count } from "drizzle-orm";
 import productsRoute from "./routes/products";
 import checkoutRoute from "./routes/checkout";
+import transactionsRoute from "./routes/transactions";
 
 type Bindings = {
   DB: D1Database;
@@ -67,5 +68,6 @@ app.get("/health", async (c) => {
 // ─── Routes ──────────────────────────────────────────────────────────
 app.route("/products", productsRoute);
 app.route("/checkout", checkoutRoute);
+app.route("/transactions", transactionsRoute);
 
 export default app;

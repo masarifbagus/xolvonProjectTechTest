@@ -12,8 +12,8 @@ import type { CheckoutResponse } from "@/types/cart";
 interface CartSidebarProps {
   open: boolean;
   onClose: () => void;
-  onCheckoutSuccess: (result: CheckoutResponse) => void;
-  onRefreshProducts: () => void;
+  onCheckoutSuccess?: (result: CheckoutResponse) => void;
+  onRefreshProducts?: () => void;
 }
 
 // ─── Component ────────────────────────────────────────────────
@@ -75,8 +75,8 @@ export default function CartSidebar({
       // Sukses: kosongkan keranjang, tutup sidebar, tampilkan modal
       clearCart();
       onClose();
-      onCheckoutSuccess(result);
-      onRefreshProducts();
+      onCheckoutSuccess?.(result);
+      onRefreshProducts?.();
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Checkout gagal. Silakan coba lagi.";

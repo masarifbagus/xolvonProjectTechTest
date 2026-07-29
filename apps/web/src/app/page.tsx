@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import type { Product, ProductFormData } from "@/types/product";
 import type { CheckoutResponse } from "@/types/cart";
 import {
@@ -155,68 +156,96 @@ export default function ProductsPage() {
       <header className="sticky top-0 z-30 border-b border-glass-border bg-background/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shadow-lg shadow-accent/20">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 18 18"
-                  fill="none"
-                  className="text-white"
+            {/* Logo & Navigation */}
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shadow-lg shadow-accent/20">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    className="text-white"
+                  >
+                    <rect
+                      x="2"
+                      y="2"
+                      width="6"
+                      height="6"
+                      rx="1.5"
+                      fill="currentColor"
+                      opacity="0.9"
+                    />
+                    <rect
+                      x="10"
+                      y="2"
+                      width="6"
+                      height="6"
+                      rx="1.5"
+                      fill="currentColor"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="2"
+                      y="10"
+                      width="6"
+                      height="6"
+                      rx="1.5"
+                      fill="currentColor"
+                      opacity="0.6"
+                    />
+                    <rect
+                      x="10"
+                      y="10"
+                      width="6"
+                      height="6"
+                      rx="1.5"
+                      fill="currentColor"
+                      opacity="0.3"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-sm font-semibold text-foreground">
+                    Mini POS
+                  </h1>
+                  <p className="text-[11px] text-muted -mt-0.5">
+                    Manajemen Produk
+                  </p>
+                </div>
+              </div>
+
+              {/* Navigation Links */}
+              <nav className="hidden sm:flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-glass-border">
+                <Link
+                  href="/"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-accent text-white shadow-sm transition-all"
                 >
-                  <rect
-                    x="2"
-                    y="2"
-                    width="6"
-                    height="6"
-                    rx="1.5"
-                    fill="currentColor"
-                    opacity="0.9"
-                  />
-                  <rect
-                    x="10"
-                    y="2"
-                    width="6"
-                    height="6"
-                    rx="1.5"
-                    fill="currentColor"
-                    opacity="0.6"
-                  />
-                  <rect
-                    x="2"
-                    y="10"
-                    width="6"
-                    height="6"
-                    rx="1.5"
-                    fill="currentColor"
-                    opacity="0.6"
-                  />
-                  <rect
-                    x="10"
-                    y="10"
-                    width="6"
-                    height="6"
-                    rx="1.5"
-                    fill="currentColor"
-                    opacity="0.3"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-sm font-semibold text-foreground">
-                  Mini POS
-                </h1>
-                <p className="text-[11px] text-muted -mt-0.5">
-                  Manajemen Produk
-                </p>
-              </div>
+                  Produk
+                </Link>
+                <Link
+                  href="/transactions"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-foreground hover:bg-white/5 transition-all"
+                >
+                  Riwayat Transaksi
+                </Link>
+              </nav>
             </div>
+
 
             {/* Header Actions */}
             {!loading && !error && (
               <div className="flex items-center gap-2">
+                {/* Mobile Transactions Link */}
+                <Link
+                  href="/transactions"
+                  className="sm:hidden px-3 py-1.5 rounded-xl text-xs font-medium bg-white/5 border border-glass-border text-foreground hover:bg-white/10 transition-all"
+                >
+                  Riwayat
+                </Link>
+
                 {/* Cart Button */}
+
                 <button
                   onClick={() => setCartOpen(true)}
                   className="
