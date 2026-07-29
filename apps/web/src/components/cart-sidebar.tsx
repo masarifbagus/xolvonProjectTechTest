@@ -101,67 +101,57 @@ export default function CartSidebar({
         aria-hidden="true"
       />
 
-      {/* Sidebar Panel - Solid White Background */}
+      {/* Sidebar Panel - Desktop Kasir Style */}
       <aside
         role="dialog"
         aria-modal="true"
         aria-label="Keranjang belanja"
         className={`
           fixed top-0 right-0 z-50 h-full w-full max-w-md
-          flex flex-col bg-white border-l border-border shadow-xl
+          flex flex-col bg-white border-l-2 border-border shadow-2xl
           ${closing ? "animate-slide-out-right" : "animate-slide-in-right"}
         `}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-white">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-                fill="none"
-                className="text-primary"
-              >
-                <path
-                  d="M1 1H3L3.6 4M3.6 4H17L14 11H5L3.6 4ZM6 15.5C6 16.0523 5.55228 16.5 5 16.5C4.44772 16.5 4 16.0523 4 15.5C4 14.9477 4.44772 14.5 5 14.5C5.55228 14.5 6 14.9477 6 15.5ZM15 15.5C15 16.0523 14.5523 16.5 14 16.5C13.4477 16.5 13 16.0523 13 15.5C13 14.9477 13.4477 14.5 14 14.5C14.5523 14.5 15 14.9477 15 15.5Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <div className="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-bold text-xs">
+              🛒
             </div>
             <div>
-              <h2 className="text-sm font-bold text-text-primary">
+              <h2 className="text-sm font-bold text-text-primary uppercase tracking-wide">
                 Keranjang Belanja
               </h2>
               <p className="text-[11px] text-text-secondary -mt-0.5">
-                {totalItems} item dipilih
+                {totalItems} item terdistribusi
               </p>
             </div>
           </div>
 
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface border border-transparent hover:border-border transition-all"
+            className="px-2.5 py-1 rounded text-xs font-semibold border border-border text-text-secondary hover:text-text-primary hover:bg-surface transition-all flex items-center gap-1"
             aria-label="Tutup keranjang"
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path
-                d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            </svg>
+            <span>Tutup</span>
+            <kbd className="font-mono text-[10px] bg-slate-100 border border-slate-300 text-slate-700 px-1 rounded">Esc</kbd>
           </button>
         </div>
 
-        {/* Items List */}
-        <div className="flex-1 overflow-y-auto p-5">
+        {/* Panel Total Transaksi Raksasa */}
+        <div className="bg-slate-100 border-b-2 border-border p-4 text-center">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary block">
+            TOTAL BELANJA KASIR
+          </span>
+          <div className="text-4xl sm:text-5xl font-black text-text-primary tabular-nums tracking-tight mt-1">
+            {formatRupiah(totalPrice)}
+          </div>
+        </div>
+
+        {/* Items Header & List (Density Tinggi) */}
+        <div className="flex-1 overflow-y-auto flex flex-col">
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center p-6 gap-3">
+            <div className="flex flex-col items-center justify-center flex-1 text-center p-6 gap-3">
               <div className="w-14 h-14 rounded-full bg-surface border border-border flex items-center justify-center">
                 <svg
                   width="28"
@@ -180,16 +170,24 @@ export default function CartSidebar({
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-text-primary">
-                  Keranjang masih kosong
+                <p className="text-sm font-bold text-text-primary">
+                  Keranjang Masih Kosong
                 </p>
                 <p className="text-xs text-text-secondary mt-1 max-w-xs">
-                  Pilih "+ Keranjang" pada produk untuk menambahkan item belanja
+                  Tekan "+ Keranjang" pada produk atau cari produk untuk transaksi
                 </p>
               </div>
             </div>
           ) : (
-            <div className="divide-y divide-border border border-border rounded-lg overflow-hidden bg-white shadow-xs">
+            <div className="divide-y divide-border border-b border-border bg-white">
+              {/* Table Header */}
+              <div className="grid grid-cols-[1fr_auto_auto] gap-2 px-4 py-2 bg-surface border-b-2 border-border text-[11px] font-semibold text-text-secondary uppercase tracking-wider">
+                <span>Rincian Produk</span>
+                <span className="text-center w-24">Jumlah</span>
+                <span className="text-right min-w-[80px]">Subtotal</span>
+              </div>
+
+              {/* Rows */}
               {items.map((item) => {
                 const isLimitReached = item.qty >= item.stock;
                 const isNearLimit = item.qty >= item.stock - 2 && !isLimitReached;
@@ -197,72 +195,55 @@ export default function CartSidebar({
                 return (
                   <div
                     key={item.productId}
-                    className="p-4 flex flex-col gap-2.5 bg-white hover:bg-slate-50/50 transition-colors"
+                    className="p-3.5 flex flex-col gap-2 bg-white even:bg-surface/50 hover:bg-slate-100/60 transition-colors"
                   >
-                    {/* Item Header */}
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-md bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-bold text-primary shrink-0">
-                          {item.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-semibold text-text-primary truncate">
-                            {item.name}
-                          </p>
-                          <p className="text-[11px] text-text-secondary tabular-nums">
-                            {formatRupiah(item.price)}
-                          </p>
-                        </div>
+                    {/* Top Row: Name + Remove */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-text-primary truncate">
+                          {item.name}
+                        </p>
+                        <p className="text-[11px] text-text-secondary tabular-nums">
+                          @ {formatRupiah(item.price)}
+                        </p>
                       </div>
 
-                      {/* Remove */}
+                      {/* Remove Button with text label */}
                       <button
                         onClick={() => removeItem(item.productId)}
-                        className="p-1 rounded text-text-secondary hover:text-danger hover:bg-red-50 transition-all shrink-0"
+                        className="px-2 py-0.5 rounded text-[11px] font-semibold border border-red-200 text-danger bg-red-50 hover:bg-red-100 transition-all shrink-0 flex items-center gap-1"
                         aria-label={`Hapus ${item.name} dari keranjang`}
                       >
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                          <path
-                            d="M2 3.5H12M5 3.5V2.5C5 2.22386 5.22386 2 5.5 2H8.5C8.77614 2 9 2.22386 9 2.5V3.5M3.5 3.5V11.5C3.5 11.7761 3.72386 12 4 12H10C10.2761 12 10.5 11.7761 10.5 11.5V3.5"
-                            stroke="currentColor"
-                            strokeWidth="1.3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        ✕ Hapus
                       </button>
                     </div>
 
-                    {/* Qty Control + Subtotal */}
+                    {/* Bottom Row: Qty Control & Subtotal */}
                     <div className="flex items-center justify-between pt-1">
-                      <div className="flex items-center gap-1.5">
-                        {/* Minus */}
+                      <div className="flex items-center gap-1">
+                        {/* Decrement */}
                         <button
                           onClick={() => handleDecrement(item.productId, item.qty)}
                           className="
-                            w-7 h-7 rounded-md border border-border bg-white
-                            flex items-center justify-center text-text-primary
-                            hover:bg-surface transition-all active:scale-95 shadow-xs
+                            px-2 py-1 rounded border border-border bg-white text-xs font-bold text-text-primary
+                            hover:bg-surface transition-all active:scale-95 shadow-2xs
                           "
                           aria-label={`Kurangi qty ${item.name}`}
                         >
-                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                            <path d="M2.5 6H9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                          </svg>
+                          −
                         </button>
 
                         {/* Qty Display */}
-                        <span className="w-8 text-center text-xs font-bold tabular-nums text-text-primary">
+                        <span className="w-10 text-center text-xs font-bold tabular-nums text-text-primary bg-surface border border-border py-0.5 rounded">
                           {item.qty}
                         </span>
 
-                        {/* Plus */}
+                        {/* Increment */}
                         <button
                           onClick={() => handleIncrement(item.productId, item.qty, item.stock)}
                           disabled={isLimitReached}
                           className={`
-                            w-7 h-7 rounded-md border border-border bg-white
-                            flex items-center justify-center transition-all active:scale-95 shadow-xs
+                            px-2 py-1 rounded border border-border bg-white text-xs font-bold transition-all active:scale-95 shadow-2xs
                             ${
                               isLimitReached
                                 ? "opacity-40 cursor-not-allowed bg-surface"
@@ -271,9 +252,7 @@ export default function CartSidebar({
                           `}
                           aria-label={`Tambah qty ${item.name}`}
                         >
-                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                            <path d="M6 2.5V9.5M2.5 6H9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                          </svg>
+                          +
                         </button>
                       </div>
 
@@ -283,15 +262,15 @@ export default function CartSidebar({
                       </p>
                     </div>
 
-                    {/* Stock limit warning below Qty Control */}
+                    {/* Warnings */}
                     {isLimitReached && (
-                      <p className="text-[11px] font-medium text-danger bg-red-50 px-2 py-0.5 rounded border border-red-100 mt-1">
-                        Batas stok ({item.stock} item) telah tercapai
+                      <p className="text-[10px] font-bold text-danger bg-red-50 px-2 py-0.5 rounded border border-red-200 mt-0.5">
+                        Mencapai batas stok max ({item.stock})
                       </p>
                     )}
                     {isNearLimit && (
-                      <p className="text-[11px] font-medium text-warning bg-amber-50 px-2 py-0.5 rounded border border-amber-100 mt-1">
-                        Mendekati sisa stok ({item.stock} item)
+                      <p className="text-[10px] font-bold text-warning bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mt-0.5">
+                        Sisa stok menipis ({item.stock})
                       </p>
                     )}
                   </div>
@@ -301,24 +280,15 @@ export default function CartSidebar({
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer: Tombol Checkout Besar & Jelas */}
         {items.length > 0 && (
-          <div className="border-t border-border bg-white p-5 space-y-4 shadow-lg">
-            {/* Total */}
-            <div className="flex items-center justify-between pt-1">
-              <span className="text-xs font-medium text-text-secondary">Total Pembayaran</span>
-              <span className="text-lg font-bold text-text-primary tabular-nums">
-                {formatRupiah(totalPrice)}
-              </span>
-            </div>
-
-            {/* Checkout Button */}
+          <div className="border-t-2 border-border bg-white p-4 space-y-3 shadow-xl">
             <button
               onClick={handleCheckout}
               disabled={checkingOut}
               className={`
-                w-full py-2.5 rounded-lg text-xs font-bold text-white
-                transition-all active:scale-[0.99] shadow-xs
+                w-full py-4 rounded-lg text-base sm:text-lg font-black text-white uppercase tracking-wide
+                transition-all active:scale-[0.99] shadow-md
                 flex items-center justify-center gap-2
                 ${
                   checkingOut
@@ -330,20 +300,14 @@ export default function CartSidebar({
               {checkingOut ? (
                 <>
                   <span className="checkout-spinner" aria-hidden="true" />
-                  <span>Memproses Checkout...</span>
+                  <span>MEMPROSES CHECKOUT...</span>
                 </>
               ) : (
                 <>
-                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M2 2H4L4.8 5M4.8 5H14L12 10H6L4.8 5ZM7 14C7 14.5523 6.55228 15 6 15C5.44772 15 5 14.5523 5 14C5 13.4477 5.44772 13 6 13C6.55228 13 7 13.4477 7 14ZM13 14C13 14.5523 12.5523 15 12 15C11.4477 15 11 14.5523 11 14C11 13.4477 11.4477 13 12 13C12.5523 13 13 13.4477 13 14Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span>Checkout Sekarang</span>
+                  <span>BAYAR — {formatRupiah(totalPrice)}</span>
+                  <kbd className="font-mono text-xs font-normal px-2 py-0.5 bg-black/30 rounded border border-white/30 text-white uppercase ml-1">
+                    F12
+                  </kbd>
                 </>
               )}
             </button>

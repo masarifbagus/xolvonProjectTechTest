@@ -6,7 +6,8 @@
   ],
   "scripts": {
     "dev:web": "npm -w apps/web run dev",
-    "dev:api": "npm -w apps/api run dev"
+    "dev:api": "npm -w apps/api run dev",
+    "build": "npm -w apps/web run build"
   },
   "allowScripts": {
     "esbuild@0.18.20": true,

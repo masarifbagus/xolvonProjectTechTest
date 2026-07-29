@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Product, ProductFormData } from "@/types/product";
 import type { CheckoutResponse } from "@/types/cart";
@@ -12,6 +12,7 @@ import {
 } from "@/lib/api";
 import { useToast } from "@/components/toast-provider";
 import { useCart } from "@/components/cart-context";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import ProductTable from "@/components/product-table";
 import ProductModal from "@/components/product-modal";
 import ProductSkeleton from "@/components/product-skeleton";
@@ -19,19 +20,26 @@ import EmptyState from "@/components/empty-state";
 import ErrorState from "@/components/error-state";
 import CartSidebar from "@/components/cart-sidebar";
 import CheckoutSuccessModal from "@/components/checkout-success-modal";
+import ShortcutModal from "@/components/shortcut-modal";
+import { formatRupiah } from "@/lib/format";
 
 export default function ProductsPage() {
   const { toast } = useToast();
-  const { addToCart, totalItems, refreshStock } = useCart();
+  const { addToCart, totalItems, totalPrice, refreshStock, items } = useCart();
 
   // Data state
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Modal state
+  // Search state & ref
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Modal states
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
 
   // Per-product toggling state
   const [togglingIds, setTogglingIds] = useState<Set<number>>(new Set());
@@ -63,6 +71,61 @@ export default function ProductsPage() {
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
+
+  // Auto-focus search input on load
+  useEffect(() => {
+    if (!loading && products.length > 0) {
+      searchInputRef.current?.focus();
+    }
+  }, [loading, products.length]);
+
+  // ─── Keyboard Shortcuts Setup ────────────────────────────
+
+  const handleEscape = useCallback(() => {
+    if (modalOpen) {
+      setModalOpen(false);
+      setEditingProduct(null);
+      return;
+    }
+    if (checkoutResult) {
+      setCheckoutResult(null);
+      return;
+    }
+    if (shortcutHelpOpen) {
+      setShortcutHelpOpen(false);
+      return;
+    }
+    if (cartOpen) {
+      setCartOpen(false);
+      return;
+    }
+  }, [modalOpen, checkoutResult, shortcutHelpOpen, cartOpen]);
+
+  const handleSearchFocus = useCallback(() => {
+    searchInputRef.current?.focus();
+    searchInputRef.current?.select();
+  }, []);
+
+  const handleToggleCart = useCallback(() => {
+    setCartOpen((prev) => !prev);
+  }, []);
+
+  const handleShortcutCheckout = useCallback(() => {
+    if (items.length === 0) return;
+    setCartOpen(true);
+  }, [items.length]);
+
+  const handleToggleHelp = useCallback(() => {
+    setShortcutHelpOpen((prev) => !prev);
+  }, []);
+
+  useKeyboardShortcuts({
+    onSearchFocus: handleSearchFocus,
+    onToggleCart: handleToggleCart,
+    onCheckout: handleShortcutCheckout,
+    onEscape: handleEscape,
+    onToggleHelp: handleToggleHelp,
+  });
 
   // ─── Create / Edit ────────────────────────────────────────
 
@@ -138,6 +201,18 @@ export default function ProductsPage() {
     loadProducts(); // refresh stok terbaru
   };
 
+  // ─── Search Live Filter ───────────────────────────────────
+
+  const filteredProducts = products.filter((p) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      p.name.toLowerCase().includes(q) ||
+      p.id.toString().includes(q) ||
+      p.price.toString().includes(q)
+    );
+  });
+
   // ─── Stats ────────────────────────────────────────────────
 
   const activeCount = products.filter((p) => p.isActive === 1).length;
@@ -149,126 +224,92 @@ export default function ProductsPage() {
   // ─── Render ───────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col flex-1 min-h-screen bg-background text-text-primary">
-      {/* Header / Navbar */}
-      <header className="sticky top-0 z-30 border-b border-border bg-white shadow-xs">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+    <div className="flex flex-col flex-1 min-h-screen bg-white text-text-primary">
+      {/* Top Desktop Kasir Header */}
+      <header className="sticky top-0 z-30 border-b-2 border-border bg-white shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 gap-4">
             {/* Logo & Navigation */}
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-xs">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    className="text-white"
-                  >
-                    <rect
-                      x="2"
-                      y="2"
-                      width="6"
-                      height="6"
-                      rx="1.5"
-                      fill="currentColor"
-                    />
-                    <rect
-                      x="10"
-                      y="2"
-                      width="6"
-                      height="6"
-                      rx="1.5"
-                      fill="currentColor"
-                      opacity="0.75"
-                    />
-                    <rect
-                      x="2"
-                      y="10"
-                      width="6"
-                      height="6"
-                      rx="1.5"
-                      fill="currentColor"
-                      opacity="0.75"
-                    />
-                    <rect
-                      x="10"
-                      y="10"
-                      width="6"
-                      height="6"
-                      rx="1.5"
-                      fill="currentColor"
-                      opacity="0.4"
-                    />
-                  </svg>
+                <div className="w-9 h-9 rounded bg-primary text-white flex items-center justify-center font-extrabold text-sm shadow-xs">
+                  POS
                 </div>
                 <div>
-                  <h1 className="text-sm font-bold text-text-primary tracking-tight">
-                    Mini POS
+                  <h1 className="text-sm font-black text-text-primary uppercase tracking-tight">
+                    Software Kasir Toko
                   </h1>
-                  <p className="text-[11px] text-text-secondary -mt-0.5">
-                    Manajemen Produk
+                  <p className="text-[11px] font-semibold text-text-secondary -mt-0.5">
+                    Manajemen Produk & Transaksi
                   </p>
                 </div>
               </div>
 
-              {/* Navigation Links */}
-              <nav className="hidden sm:flex items-center gap-1 bg-surface p-1 rounded-lg border border-border">
+              {/* Navigation Links with Shortcut Hints */}
+              <nav className="hidden md:flex items-center gap-1 bg-surface p-1 rounded border border-border">
                 <Link
                   href="/"
-                  className="px-3 py-1.5 rounded-md text-xs font-semibold bg-white text-primary shadow-xs border border-border/50 transition-all"
+                  className="px-3 py-1.5 rounded text-xs font-bold bg-white text-primary border border-border shadow-2xs flex items-center gap-1.5"
                 >
-                  Produk
+                  <span>Produk</span>
+                  <kbd className="font-mono text-[10px] bg-slate-100 border border-slate-300 text-slate-700 px-1 rounded">
+                    Ctrl+P
+                  </kbd>
                 </Link>
                 <Link
                   href="/transactions"
-                  className="px-3 py-1.5 rounded-md text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-white/60 transition-all"
+                  className="px-3 py-1.5 rounded text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-slate-100 transition-all flex items-center gap-1.5"
                 >
-                  Riwayat Transaksi
+                  <span>Riwayat Transaksi</span>
+                  <kbd className="font-mono text-[10px] bg-slate-100 border border-slate-300 text-slate-700 px-1 rounded">
+                    Ctrl+H
+                  </kbd>
                 </Link>
               </nav>
             </div>
 
-            {/* Header Actions */}
+            {/* Total Transaksi Header Banner + Cart & Actions */}
             {!loading && !error && (
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
+                {/* Total Transaksi Banner in Header */}
+                <div className="hidden lg:flex items-center gap-3 px-4 py-1.5 rounded bg-slate-100 border border-slate-300">
+                  <span className="text-[11px] font-extrabold uppercase text-text-secondary">
+                    TOTAL KASIR:
+                  </span>
+                  <span className="text-xl font-black text-text-primary tabular-nums">
+                    {formatRupiah(totalPrice)}
+                  </span>
+                </div>
+
                 {/* Mobile Transactions Link */}
                 <Link
                   href="/transactions"
-                  className="sm:hidden px-3 py-1.5 rounded-lg text-xs font-medium bg-surface border border-border text-text-primary hover:bg-slate-100 transition-all"
+                  className="md:hidden px-2.5 py-1.5 rounded text-xs font-semibold bg-surface border border-border text-text-primary hover:bg-slate-100"
                 >
                   Riwayat
                 </Link>
 
-                {/* Cart Button */}
+                {/* Cart Button with F9 shortcut hint */}
                 <button
                   onClick={() => setCartOpen(true)}
                   className="
-                    relative inline-flex items-center justify-center gap-2
-                    px-3 py-2 rounded-lg border border-border
+                    inline-flex items-center justify-center gap-2
+                    px-3.5 py-2 rounded border-2 border-border
                     bg-white hover:bg-surface text-text-primary
-                    transition-all active:scale-95 shadow-xs
+                    transition-all active:scale-95 shadow-2xs
                   "
                   aria-label={`Keranjang (${totalItems} item)`}
                 >
-                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                    <path
-                      d="M2 2H4L4.8 5M4.8 5H18L15 12H6.5L4.8 5ZM7 17C7 17.5523 6.55228 18 6 18C5.44772 18 5 17.5523 5 17C5 16.4477 5.44772 16 6 16C6.55228 16 7 16.4477 7 17ZM16 17C16 17.5523 15.5523 18 15 18C14.4477 18 14 17.5523 14 17C14 16.4477 14.4477 16 15 16C15.5523 16 16 16.4477 16 17Z"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span className="hidden sm:inline text-xs font-semibold">Keranjang</span>
+                  <span className="text-xs font-bold">Keranjang</span>
+                  <kbd className="font-mono text-[10px] font-bold bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded border border-slate-300">
+                    F9
+                  </kbd>
                   {totalItems > 0 && (
                     <span className="
-                      min-w-[20px] h-[20px] px-1.5
-                      flex items-center justify-center
-                      rounded-full text-[11px] font-bold tabular-nums
-                      bg-primary text-white shadow-xs
+                      px-2 py-0.5 rounded-full text-[11px] font-black tabular-nums
+                      bg-primary text-white shadow-2xs
                     ">
-                      {totalItems > 99 ? "99+" : totalItems}
+                      {totalItems}
                     </span>
                   )}
                 </button>
@@ -277,21 +318,13 @@ export default function ProductsPage() {
                 <button
                   onClick={handleOpenCreate}
                   className="
-                    inline-flex items-center gap-2 px-3.5 py-2 rounded-lg
-                    text-xs font-semibold bg-primary text-white
-                    hover:bg-primary-hover shadow-xs
-                    transition-all active:scale-95
+                    inline-flex items-center gap-1.5 px-3.5 py-2 rounded
+                    text-xs font-bold bg-primary text-white
+                    hover:bg-primary-hover shadow-2xs border border-primary-hover
+                    transition-all active:scale-95 uppercase tracking-wide
                   "
                 >
-                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 3V13M3 8H13"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <span>Tambah Produk</span>
+                  <span>+ Tambah Produk</span>
                 </button>
               </div>
             )}
@@ -300,51 +333,72 @@ export default function ProductsPage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5 space-y-5">
+        {/* Prominent Search Bar (Requirement 2) */}
+        {!loading && !error && (
+          <div className="bg-surface p-4 rounded-lg border-2 border-border shadow-2xs space-y-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-secondary font-bold text-sm">
+                  🔍
+                </div>
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Cari nama atau kode produk... (Fokus: F1)"
+                  className="
+                    w-full pl-10 pr-24 py-3 rounded-md text-sm font-semibold
+                    bg-white border-2 border-slate-300
+                    text-text-primary placeholder:text-text-secondary/70 placeholder:font-normal
+                    focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none
+                    transition-all shadow-xs
+                  "
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="text-xs font-bold text-text-secondary hover:text-text-primary px-1.5 py-0.5 rounded bg-slate-100 border border-slate-300"
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <kbd className="font-mono text-xs font-bold px-2 py-1 bg-slate-100 text-slate-700 border border-slate-300 rounded">
+                    F1
+                  </kbd>
+                </div>
+              </div>
+
+              {/* Shortcut Help Trigger Button */}
+              <button
+                onClick={() => setShortcutHelpOpen(true)}
+                className="px-3.5 py-3 rounded-md border border-border bg-white hover:bg-slate-100 text-xs font-bold text-text-primary flex items-center justify-center gap-1.5 shadow-2xs shrink-0"
+              >
+                <span>⌨ Pintasan Key</span>
+                <kbd className="font-mono text-[10px] bg-slate-200 text-slate-800 px-1 rounded font-bold">?</kbd>
+              </button>
+            </div>
+
+            {searchQuery.trim() && (
+              <p className="text-xs font-medium text-text-secondary">
+                Menampilkan <strong className="text-text-primary">{filteredProducts.length}</strong> hasil pencarian untuk "{searchQuery}"
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Stats Cards */}
         {!loading && !error && products.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatCard label="Total Produk Toko" value={products.length} />
+            <StatCard label="Produk Aktif" value={activeCount} color="success" />
+            <StatCard label="Total Stok Fisik" value={totalStock} />
             <StatCard
-              label="Total Produk"
-              value={products.length}
-              icon={
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
-                  <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                  <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                  <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                  <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              }
-            />
-            <StatCard
-              label="Aktif"
-              value={activeCount}
-              icon={
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-success">
-                  <path d="M13.5 4.5L6.5 11.5L2.5 7.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              }
-            />
-            <StatCard
-              label="Total Stok"
-              value={totalStock}
-              icon={
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-secondary">
-                  <path d="M3 6L8 3L13 6V10L8 13L3 10V6Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                  <path d="M8 8V13M3 6L8 8M8 8L13 6" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              }
-            />
-            <StatCard
-              label="Stok Rendah"
+              label="Stok Menipis (≤10)"
               value={lowStockCount}
-              icon={
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-warning">
-                  <path d="M8 3L14 13H2L8 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                  <path d="M8 7V9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  <circle cx="8" cy="11" r="0.75" fill="currentColor" />
-                </svg>
-              }
+              color="warning"
               warning={lowStockCount > 0}
             />
           </div>
@@ -357,9 +411,21 @@ export default function ProductsPage() {
           <ErrorState message={error} onRetry={loadProducts} />
         ) : products.length === 0 ? (
           <EmptyState onAddProduct={handleOpenCreate} />
+        ) : filteredProducts.length === 0 ? (
+          <div className="p-8 text-center bg-surface border-2 border-border rounded-lg space-y-3">
+            <p className="text-sm font-bold text-text-primary">
+              Tidak ada produk yang cocok dengan pencarian "{searchQuery}"
+            </p>
+            <button
+              onClick={() => setSearchQuery("")}
+              className="px-4 py-2 bg-primary text-white text-xs font-bold rounded hover:bg-primary-hover"
+            >
+              Tampilkan Semua Produk
+            </button>
+          </div>
         ) : (
           <ProductTable
-            products={products}
+            products={filteredProducts}
             togglingIds={togglingIds}
             onEdit={handleOpenEdit}
             onToggleStatus={handleToggleStatus}
@@ -368,11 +434,25 @@ export default function ProductsPage() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-white py-4 mt-auto">
-        <p className="text-center text-xs text-text-secondary">
-          Mini POS &copy; {new Date().getFullYear()} — Xolvon Tech Test
-        </p>
+      {/* Shortcut Legend Footer Bar */}
+      <footer className="border-t-2 border-border bg-surface py-3 px-4 mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-text-secondary">
+          <div className="flex flex-wrap items-center gap-3 font-medium">
+            <span className="font-bold text-text-primary uppercase text-[11px] tracking-wider">
+              Shortcut Kasir:
+            </span>
+            <span><kbd className="font-mono bg-white border border-slate-300 text-slate-800 font-bold px-1.5 py-0.5 rounded">F1</kbd> Cari</span>
+            <span><kbd className="font-mono bg-white border border-slate-300 text-slate-800 font-bold px-1.5 py-0.5 rounded">F9</kbd> Keranjang</span>
+            <span><kbd className="font-mono bg-white border border-slate-300 text-slate-800 font-bold px-1.5 py-0.5 rounded">F12</kbd> Bayar</span>
+            <span><kbd className="font-mono bg-white border border-slate-300 text-slate-800 font-bold px-1.5 py-0.5 rounded">Esc</kbd> Tutup</span>
+            <span><kbd className="font-mono bg-white border border-slate-300 text-slate-800 font-bold px-1.5 py-0.5 rounded">Ctrl+H</kbd> Riwayat</span>
+            <span><kbd className="font-mono bg-white border border-slate-300 text-slate-800 font-bold px-1.5 py-0.5 rounded">Ctrl+P</kbd> Produk</span>
+          </div>
+
+          <p className="text-[11px] text-text-secondary shrink-0">
+            Mini POS &copy; {new Date().getFullYear()} — Xolvon Tech Test
+          </p>
+        </div>
       </footer>
 
       {/* Product Modal */}
@@ -398,6 +478,12 @@ export default function ProductsPage() {
           onClose={() => setCheckoutResult(null)}
         />
       )}
+
+      {/* Shortcut Help Modal */}
+      <ShortcutModal
+        open={shortcutHelpOpen}
+        onClose={() => setShortcutHelpOpen(false)}
+      />
     </div>
   );
 }
@@ -407,26 +493,36 @@ export default function ProductsPage() {
 function StatCard({
   label,
   value,
-  icon,
+  color = "default",
   warning = false,
 }: {
   label: string;
   value: number;
-  icon: React.ReactNode;
+  color?: "default" | "success" | "warning";
   warning?: boolean;
 }) {
   return (
     <div
       className={`
-        rounded-lg border p-4 bg-white shadow-xs
-        ${warning ? "border-amber-200 bg-amber-50/50" : "border-border"}
+        rounded-lg border-2 p-3.5 bg-white shadow-2xs flex flex-col justify-between
+        ${warning ? "border-amber-300 bg-amber-50/50" : "border-border"}
       `}
     >
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-xs font-medium text-text-secondary">{label}</span>
-        {icon}
-      </div>
-      <p className="text-2xl font-bold text-text-primary tabular-nums">
+      <span className="text-xs font-bold text-text-secondary uppercase tracking-wide">
+        {label}
+      </span>
+      <p
+        className={`
+          text-2xl sm:text-3xl font-black tabular-nums mt-1
+          ${
+            color === "success"
+              ? "text-success"
+              : color === "warning"
+              ? "text-warning"
+              : "text-text-primary"
+          }
+        `}
+      >
         {value.toLocaleString("id-ID")}
       </p>
     </div>

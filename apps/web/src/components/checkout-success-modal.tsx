@@ -38,15 +38,15 @@ export default function CheckoutSuccessModal({
           aria-labelledby="checkout-success-title"
           className="
             pointer-events-auto w-full max-w-md
-            bg-white border border-border
-            rounded-lg shadow-xl animate-slide-up
+            bg-white border-2 border-border
+            rounded-lg shadow-2xl animate-slide-up
             overflow-hidden
           "
         >
           {/* Header */}
-          <div className="px-6 pt-6 pb-4 text-center">
+          <div className="px-6 pt-5 pb-4 text-center bg-slate-50 border-b border-border">
             {/* Success Icon */}
-            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mb-3">
+            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center mb-2">
               <svg
                 width="24"
                 height="24"
@@ -57,7 +57,7 @@ export default function CheckoutSuccessModal({
                 <path
                   d="M20 6L9 17L4 12"
                   stroke="currentColor"
-                  strokeWidth="2.5"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -66,20 +66,20 @@ export default function CheckoutSuccessModal({
 
             <h2
               id="checkout-success-title"
-              className="text-base font-bold text-text-primary"
+              className="text-lg font-black text-text-primary uppercase tracking-wide"
             >
-              Transaksi Berhasil!
+              TRANSAKSI BERHASIL!
             </h2>
-            <p className="text-xs text-text-secondary mt-1">
-              ID Transaksi: <span className="font-semibold tabular-nums text-text-primary">#{result.id}</span>
+            <p className="text-xs font-bold text-text-secondary mt-0.5">
+              ID Transaksi: <span className="tabular-nums text-text-primary">#{result.id}</span>
             </p>
           </div>
 
-          {/* Items Table */}
-          <div className="px-6 pb-4">
-            <div className="rounded-md border border-border bg-white overflow-hidden shadow-xs">
+          {/* Items Table - High Density */}
+          <div className="p-4">
+            <div className="rounded border-2 border-border bg-white overflow-hidden shadow-2xs">
               {/* Table Header */}
-              <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 px-3.5 py-2.5 bg-surface border-b border-border text-[11px] text-text-secondary uppercase tracking-wider font-semibold">
+              <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-3 py-2 bg-surface border-b-2 border-border text-[11px] text-text-secondary uppercase tracking-wider font-extrabold">
                 <span>Produk</span>
                 <span className="text-right">Harga</span>
                 <span className="text-center">Qty</span>
@@ -91,18 +91,18 @@ export default function CheckoutSuccessModal({
                 {result.items.map((item) => (
                   <div
                     key={item.productId}
-                    className="grid grid-cols-[1fr_auto_auto_auto] gap-3 px-3.5 py-2.5 text-xs items-center"
+                    className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-3 py-2 text-xs items-center even:bg-surface/50"
                   >
-                    <span className="text-text-primary font-medium truncate">
+                    <span className="text-text-primary font-bold truncate">
                       {item.productName}
                     </span>
                     <span className="text-text-secondary tabular-nums text-right whitespace-nowrap">
                       {formatRupiah(item.price)}
                     </span>
-                    <span className="text-text-primary text-center tabular-nums font-semibold">
+                    <span className="text-text-primary text-center tabular-nums font-black bg-slate-100 px-1 rounded">
                       {item.qty}
                     </span>
-                    <span className="text-text-primary font-semibold tabular-nums text-right whitespace-nowrap">
+                    <span className="text-text-primary font-bold tabular-nums text-right whitespace-nowrap">
                       {formatRupiah(item.subtotal)}
                     </span>
                   </div>
@@ -110,9 +110,9 @@ export default function CheckoutSuccessModal({
               </div>
 
               {/* Total Row */}
-              <div className="grid grid-cols-[1fr_auto] gap-3 px-3.5 py-3 border-t border-border bg-slate-50">
-                <span className="text-xs font-bold text-text-primary uppercase tracking-wide">Total Pembayaran</span>
-                <span className="text-sm font-bold text-primary tabular-nums">
+              <div className="grid grid-cols-[1fr_auto] gap-3 px-3.5 py-3 border-t-2 border-border bg-slate-100">
+                <span className="text-xs font-black text-text-primary uppercase tracking-wider">TOTAL PEMBAYARAN</span>
+                <span className="text-lg font-black text-primary tabular-nums">
                   {formatRupiah(result.total)}
                 </span>
               </div>
@@ -120,20 +120,21 @@ export default function CheckoutSuccessModal({
           </div>
 
           {/* Time & Close */}
-          <div className="px-6 pb-6 space-y-3">
-            <p className="text-center text-[11px] text-text-secondary">
+          <div className="px-4 pb-4 space-y-2 text-center">
+            <p className="text-[11px] font-semibold text-text-secondary">
               {formattedDate}
             </p>
 
             <button
               onClick={onClose}
               className="
-                w-full py-2 rounded-md text-xs font-semibold
-                border border-border bg-white text-text-primary
-                hover:bg-surface transition-all shadow-xs
+                w-full py-2.5 rounded text-xs font-black uppercase tracking-wider
+                border border-border bg-slate-100 hover:bg-slate-200 text-text-primary
+                transition-all shadow-2xs flex items-center justify-center gap-1.5
               "
             >
-              Tutup Modal
+              <span>Tutup Struk</span>
+              <kbd className="font-mono text-[10px] bg-white border px-1 rounded">Esc</kbd>
             </button>
           </div>
         </div>
