@@ -193,3 +193,63 @@ Pengujian Quality Assurance (QA) dilakukan secara menyeluruh (*End-to-End*) pada
 ## 🎯 4. Kesimpulan Akhir
 
 Aplikasi **Mini POS System** telah melewati seluruh rangkaian pengujian QA *End-to-End* secara mendalam dengan hasil **25 / 25 Test Cases PASSED (100% Pass Rate)**. Aplikasi terbukti stabil, aman dari manipulasi harga client-side, responsif di semua ukuran layar, dan memenuhi standar kebutuhan software kasir toko modern.
+
+---
+
+## 📷 5. Lampiran & Screenshot Verifikasi Seluruh Fitur
+
+### 5.1 Antarmuka Utama Kasir & Pencarian Produk Real-Time (Search F1)
+![Main POS Interface](images/pos_home.png)
+
+*Gambar 5.1: Antarmuka utama POS Kasir dengan tabel produk high-density, filter pencarian real-time (Shortcut `F1`), statistik total produk, produk aktif, stok fisik, dan stok menipis.*
+
+---
+
+### 5.2 Modal Tambah / Edit Produk & Validasi Input Form
+![Product Modal Validation](images/product_modal_validation.png)
+
+*Gambar 5.2: Modal tambah/edit detail produk yang dilengkapi validasi form (mencegah nama kosong, harga/stok negatif, atau desimal) dengan pesan peringatan interaktif.*
+
+---
+
+### 5.3 Sidebar Keranjang Belanja & Display Total Bayar Raksasa (F9)
+![Cart Sidebar](images/cart_sidebar.png)
+
+*Gambar 5.3: Sidebar keranjang belanja kasir yang menampilkan rincian item, kontrol Qty (+/-), tombol hapus per item, serta panel total belanja kasir raksasa.*
+
+---
+
+### 5.4 Validasi Batas Maksimal Stok Fisik & Peringatan Stok
+![Stock Limit Validation](images/stock_limit_validation.png)
+
+*Gambar 5.4: Sistem validasi keranjang yang mencegah penambahan Qty melebihi stok fisik toko dengan indikator visual dan toast peringatan error.*
+
+---
+
+### 5.5 Modal Checkout Sukses / Struk Resi Digital (F12)
+![Checkout Success Modal](images/checkout_success_modal.png)
+
+*Gambar 5.5: Modal struk resi digital transaksi yang otomatis muncul pasca checkout atomik server-side berhasil diproses.*
+
+---
+
+### 5.6 Halaman Riwayat Transaksi Kasir (Ctrl+H)
+![Transactions History Page](images/transactions_page.png)
+
+*Gambar 5.6: Halaman daftar riwayat transaksi kasir terurut dari yang terbaru, dilengkapi statistik total transaksi dan total omset penjualan kumulatif.*
+
+---
+
+### 5.7 Modal Detail Transaksi & Verifikasi Snapshot Immutability
+![Transaction Detail View](images/transaction_detail_modal.png)
+
+*Gambar 5.7: Modal detail transaksi individual yang menampilkan rincian item snapshot historis (nama & harga produk saat dibeli) yang terisolasi dari perubahan produk di kemudian hari.*
+
+---
+
+### 5.8 Modal Panduan Pintasan Keyboard Global (Shortcut Help ?)
+![Shortcuts Guide Modal](images/shortcuts_guide_modal.png)
+
+*Gambar 5.8: Modal bantuan pintasan keyboard global (F1, F9, F12, Esc, Ctrl+P, Ctrl+H, ?) yang memudahkan pengoperasian tanpa mouse layaknya software kasir supermarket.*
+
+
